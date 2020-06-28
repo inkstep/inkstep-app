@@ -8,18 +8,17 @@ import 'package:inkstep/blocs/simple_bloc_delegate.dart';
 import 'package:inkstep/di/service_locator.dart';
 import 'package:inkstep/resources/journeys_repository.dart';
 import 'package:inkstep/resources/web_repository.dart';
+import 'package:inkstep/theme.dart';
 import 'package:inkstep/ui/pages/journeys_screen.dart';
 import 'package:inkstep/ui/pages/onboarding.dart';
+import 'package:inkstep/utils/app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'blocs/journeys_event.dart';
 
-void main() {
+void setupApp() {
   // Set up error handling
   FlutterError.onError = (FlutterErrorDetails details) {
-    if (details.context.contains('layout')) {
-      print('RENDERING ERROR:');
-    }
     print(details.exception);
   };
 
@@ -28,22 +27,12 @@ void main() {
 
   // Set up Service Locator
   setup();
-
-  runApp(Inkstep());
 }
 
-var hintStyle = TextStyle(color: baseColors['gray']);
-
-const baseColors = ColorSwatch<String>(0xFF0A0D18, {
-  'dark': Color(0xFF202431),
-  'gray': Color(0xFF4E586E),
-  'light': Color(0xFFFFFFFF),
-  'error': Color(0xFFFF0000),
-  'accent1': Color(0xFFF54B64),
-  'accent2': Color(0xFFF78361),
-});
-
 class Inkstep extends StatefulWidget {
+  const Inkstep({Key key, this.apiUrl}) : super(key: key);
+  final String apiUrl;
+
   @override
   State<StatefulWidget> createState() => InkstepState();
 }
@@ -57,9 +46,12 @@ class InkstepState extends State<Inkstep> {
   @override
   void initState() {
     super.initState();
+
     client = http.Client();
     _journeyBloc = JourneysBloc(
-      journeysRepository: JourneysRepository(webClient: WebRepository(client: client)),
+      journeysRepository: JourneysRepository(
+        webClient: WebRepository(client: client, baseUrl: widget.apiUrl),
+      ),
     );
 
     updateUserId = (userId) {
@@ -82,77 +74,20 @@ class InkstepState extends State<Inkstep> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    final config = AppConfig.of(context);
+
     return BlocProvider<JourneysBloc>(
       child: MaterialApp(
-        title: 'inkstep',
+        title: config.appName,
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          accentColor: baseColors['accent1'],
-          primaryColor: baseColors['dark'],
-          backgroundColor: baseColors['dark'],
-          dialogBackgroundColor: baseColors['dark'],
-          disabledColor: baseColors['grey'],
-          cardColor: baseColors['light'],
-          cardTheme: CardTheme(
-            color: baseColors['light'],
-            elevation: 4.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-          ),
-          canvasColor: baseColors['dark'],
-          textTheme: _getTextWithColor(baseColors['light']),
-          accentTextTheme: _getTextWithColor(baseColors['dark']),
-          iconTheme: _getIconWithColor(baseColors['light']),
-          accentIconTheme: _getIconWithColor(baseColors['dark']),
-          primaryTextTheme: _getTextWithColor(baseColors['light']),
-          buttonTheme: ButtonThemeData(
-            buttonColor: baseColors['dark'],
-          ),
-          cursorColor: baseColors['dark'],
-          toggleableActiveColor: baseColors['dark'],
-        ),
-        home: SetInitialPage(updateUserId: updateUserId, localUserId: localUserId),
+        theme: themeData,
+        home: SetInitialPage(
+            updateUserId: updateUserId, localUserId: localUserId),
       ),
       bloc: _journeyBloc,
     );
   }
-
-  TextTheme _getTextWithColor(Color color) => TextTheme(
-      headline: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      subhead: TextStyle(
-        fontSize: 28,
-        color: color,
-        fontWeight: FontWeight.w300,
-      ),
-      title: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w300,
-        color: color,
-      ),
-      subtitle: TextStyle(
-        fontSize: 20,
-        color: color,
-        fontWeight: FontWeight.w400,
-      ),
-      body1: TextStyle(
-        fontSize: 18,
-        color: color,
-      ),
-      caption: TextStyle(
-        fontSize: 12,
-        color: color,
-        fontWeight: FontWeight.w400,
-      ));
-
-  IconThemeData _getIconWithColor(Color color) => IconThemeData(
-        color: color,
-      );
 }
 
 class SetInitialPage extends StatelessWidget {
@@ -178,7 +113,8 @@ class SetInitialPage extends StatelessWidget {
           // Return your home here
           return JourneysScreen(onInit: () {
             if (localUserId != -1) {
-              final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
+              final JourneysBloc journeyBloc =
+                  BlocProvider.of<JourneysBloc>(context);
               journeyBloc.dispatch(LoadUser(localUserId));
             }
           });
