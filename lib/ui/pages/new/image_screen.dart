@@ -8,7 +8,11 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'info_widget.dart';
 
 class ImageScreen extends StatefulWidget {
-  ImageScreen({Key key, @required this.images, @required this.navigator, @required this.callback})
+  const ImageScreen(
+      {Key key,
+      @required this.images,
+      @required this.navigator,
+      @required this.callback})
       : super(key: key);
 
   final List<Asset> images;
@@ -16,7 +20,8 @@ class ImageScreen extends StatefulWidget {
   final void Function(List<Asset>) callback;
 
   @override
-  State<StatefulWidget> createState() => _ImageScreenState(images, navigator, callback);
+  State<StatefulWidget> createState() =>
+      _ImageScreenState(images, navigator, callback);
 }
 
 class _ImageScreenState extends State<ImageScreen> {
@@ -78,8 +83,9 @@ class ImageWidget extends InfoWidget {
                 const double thumbNoWidth = 2;
                 const double thumbNoHeight = 2;
                 const double thumbSizeFactor = 0.9;
-                final double thumbHeight =
-                    constraint.maxHeight * thumbSizeFactor * (1 / thumbNoHeight);
+                final double thumbHeight = constraint.maxHeight *
+                    thumbSizeFactor *
+                    (1 / thumbNoHeight);
                 final double thumbWidth =
                     constraint.maxWidth * thumbSizeFactor * (1 / thumbNoWidth);
                 final double thumbSize = min(thumbHeight, thumbWidth);

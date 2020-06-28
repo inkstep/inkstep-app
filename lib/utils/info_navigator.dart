@@ -56,7 +56,6 @@ class InfoNavigator {
     'size': '',
     'availability': '',
     'deposit': '',
-    'email': '',
     'noRefImgs': '',
     'artistID': '',
     'style': '',
@@ -135,10 +134,11 @@ class InfoNavigator {
           }
         },
       ),
-      if (displayEmail) EmailScreen(
-        navigator: this,
-        emailController: emailController,
-      ),
+      if (displayEmail)
+        EmailScreen(
+          navigator: this,
+          emailController: emailController,
+        ),
       OverviewForm(
         emailController: emailController,
         heightController: heightController,
@@ -165,7 +165,8 @@ class InfoNavigator {
 
     Navigator.pushReplacement<dynamic, dynamic>(
       context,
-      MaterialPageRoute<dynamic>(builder: (context) => getScreen(context, screenNum)),
+      MaterialPageRoute<dynamic>(
+          builder: (context) => getScreen(context, screenNum)),
     );
   }
 

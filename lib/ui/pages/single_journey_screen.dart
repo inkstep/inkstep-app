@@ -44,7 +44,8 @@ class DeleteJourneyDialog extends StatelessWidget {
         confirmButtonText = 'End Journey';
         break;
       case QuoteReceived:
-        header = 'If you don\'t accept this quote, it will end your journey with this artist.';
+        header =
+            'If you don\'t accept this quote, it will end your journey with this artist.';
         body = 'Think about a tattoo like a dentist\'s appointment, '
             'you don\'t haggle with your dentist. Even more importantly a tattoo is not something'
             ' to cheap out on.';
@@ -102,10 +103,12 @@ class DeleteJourneyDialog extends StatelessWidget {
             onPressed: () => _cancelJourney(context),
             elevation: 15.0,
             padding: EdgeInsets.fromLTRB(32.0, 16.0, 32.0, 16.0),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0)),
             child: Text(
               confirmButtonText,
-              style: TextStyle(fontSize: 20, fontFamily: 'Signika').copyWith(color: Colors.red),
+              style: TextStyle(fontSize: 20, fontFamily: 'Signika')
+                  .copyWith(color: Colors.red),
             ),
           ),
         ));
@@ -118,10 +121,12 @@ class DropdownFloatingActionButtons extends StatefulWidget {
   final CardModel card;
 
   @override
-  _DropdownFloatingActionButtonsState createState() => _DropdownFloatingActionButtonsState();
+  _DropdownFloatingActionButtonsState createState() =>
+      _DropdownFloatingActionButtonsState();
 }
 
-class _DropdownFloatingActionButtonsState extends State<DropdownFloatingActionButtons>
+class _DropdownFloatingActionButtonsState
+    extends State<DropdownFloatingActionButtons>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
   Animation<Color> _disappearingBtnColour;
@@ -138,12 +143,14 @@ class _DropdownFloatingActionButtonsState extends State<DropdownFloatingActionBu
   void initState() {
     _numFabs = widget.card.bookedDate == null ? 2 : 3;
 
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500))
-      ..addListener(() {
-        setState(() {});
-      });
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500))
+          ..addListener(() {
+            setState(() {});
+          });
 
-    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _animateIcon =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
 
     _disappearingBtnColour = ColorTween(
       begin: Colors.transparent,
@@ -231,11 +238,13 @@ class _DropdownFloatingActionButtonsState extends State<DropdownFloatingActionBu
     );
   }
 
-  Widget animatedDropDownFab({@required int index, @required FloatingActionButton fab}) {
+  Widget animatedDropDownFab(
+      {@required int index, @required FloatingActionButton fab}) {
     return Transform(
         transform: Matrix4.translationValues(
           0.0,
-          (_translateButton.value * (index + 1)) - (index * (_fabMiniHeight + _fabSeparation)),
+          (_translateButton.value * (index + 1)) -
+              (index * (_fabMiniHeight + _fabSeparation)),
           0.0,
         ),
         child: fab);
@@ -285,7 +294,7 @@ class _DropdownFloatingActionButtonsState extends State<DropdownFloatingActionBu
 }
 
 class SingleJourneyScreen extends StatefulWidget {
-  SingleJourneyScreen({Key key, @required this.card}) : super(key: key);
+  const SingleJourneyScreen({Key key, @required this.card}) : super(key: key);
 
   final CardModel card;
 
@@ -376,19 +385,20 @@ class _SingleJourneyScreenState extends State<SingleJourneyScreen> {
                       ),
                     ),
                   ),
-
                   Container(
                     width: fullWidth,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        LargeTwoPartHeader(largeText: 'Your Journey with', name: artistFirstName),
+                        LargeTwoPartHeader(
+                            largeText: 'Your Journey with',
+                            name: artistFirstName),
                       ],
                     ),
                   ),
-
                   if (hasDate)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -436,12 +446,16 @@ class _SingleJourneyScreenState extends State<SingleJourneyScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(widget.card.stage.icon,
-                                color: Theme.of(context).accentTextTheme.subhead.color),
+                                color: Theme.of(context)
+                                    .accentTextTheme
+                                    .subhead
+                                    .color),
                             Padding(
                               padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
                                 '${widget.card.stage.toString()}',
-                                style: Theme.of(context).accentTextTheme.subhead,
+                                style:
+                                    Theme.of(context).accentTextTheme.subhead,
                               ),
                             ),
                           ],
@@ -533,28 +547,30 @@ class _SingleJourneyScreenState extends State<SingleJourneyScreen> {
                 ),
                 Flexible(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 30.0),
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, bottom: 30.0),
                     child: StaggeredGridView.countBuilder(
                       shrinkWrap: true,
                       physics: BouncingScrollPhysics(),
                       crossAxisCount: 4,
                       itemCount: widget.card.images.length,
-                      itemBuilder: (BuildContext context, int index) => Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: widget.card.images[index].image,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            child: Container(
-                              transform: Matrix4.translationValues(10, 10, 10),
-                              alignment: Alignment.bottomRight,
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white,
-                                child: Text('${index + 1}'),
-                              ),
-                            ),
+                      itemBuilder: (BuildContext context, int index) =>
+                          Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: widget.card.images[index].image,
+                            fit: BoxFit.cover,
                           ),
+                        ),
+                        child: Container(
+                          transform: Matrix4.translationValues(10, 10, 10),
+                          alignment: Alignment.bottomRight,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Text('${index + 1}'),
+                          ),
+                        ),
+                      ),
                       staggeredTileBuilder: (int index) =>
                           StaggeredTile.count(2, index.isEven ? 2 : 1),
                       mainAxisSpacing: 16.0,

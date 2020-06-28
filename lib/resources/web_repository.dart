@@ -7,15 +7,13 @@ import 'package:meta/meta.dart';
 class WebRepository {
   const WebRepository({
     @required this.client,
+    @required this.baseUrl,
     this.delay = const Duration(milliseconds: 300),
   });
 
   final http.Client client;
   final Duration delay;
-
-  static const String url = 'http://inkstep.hails.info';
-
-  //static const String url = 'http://localhost:4567';
+  final String baseUrl;
 
   static const String userEndpoint = '/user';
   static const String journeyEndpoint = '/journey';
@@ -27,7 +25,7 @@ class WebRepository {
   static const String emailEndpoint = '/email';
 
   Future<List<Map<String, dynamic>>> loadArtists(int studioID) async {
-    final http.Response response = await client.get('$url$artistEndpoint');
+    final http.Response response = await client.get('$baseUrl$artistEndpoint');
 
     print(
         'GET $artistEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -42,7 +40,8 @@ class WebRepository {
   }
 
   Future<List<Map<String, dynamic>>> loadJourneys(int userID) async {
-    final http.Response response = await client.get('$url$journeyEndpoint?user=$userID');
+    final http.Response response =
+        await client.get('$baseUrl$journeyEndpoint?user=$userID');
 
     print(
         'GET $journeyEndpoint?user=$userID ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -61,7 +60,8 @@ class WebRepository {
   }
 
   Future<Map<String, dynamic>> loadJourney(int id) async {
-    final http.Response response = await client.get('$url$journeyEndpoint/$id');
+    final http.Response response =
+        await client.get('$baseUrl$journeyEndpoint/$id');
 
     print('GET $journeyEndpoint/$id '
         '${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -78,8 +78,10 @@ class WebRepository {
       final String jsonStr = jsonEncode(journeyMap);
       print('Saving Journey: $jsonStr');
 
-      final http.Response response = await client.put('$url$journeyEndpoint',
-          body: jsonStr, headers: {'Content-Type': 'application/json'});
+      final http.Response response = await client.put(
+          '$baseUrl$journeyEndpoint',
+          body: jsonStr,
+          headers: {'Content-Type': 'application/json'});
 
       print(
           'PUT $journeyEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -93,7 +95,8 @@ class WebRepository {
   }
 
   Future<bool> removeJourney(int journeyID) async {
-    final http.Response response = await client.delete('$url$journeyEndpoint/$journeyID');
+    final http.Response response =
+        await client.delete('$baseUrl$journeyEndpoint/$journeyID');
     print('GET $journeyEndpoint/$journeyID '
         '${response.reasonPhrase} (${response.statusCode}): ${response.body}');
 
@@ -110,13 +113,14 @@ class WebRepository {
     http.Response response;
 
     try {
-      response = await http
-          .put('$url$userEndpoint', body: jsonStr, headers: {'Content-Type': 'application/json'});
+      response = await http.put('$baseUrl$userEndpoint',
+          body: jsonStr, headers: {'Content-Type': 'application/json'});
     } catch (e) {
       print('Error $e');
       return Future.value(-1);
     }
-    print('$userEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
+    print(
+        '$userEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseJson = jsonDecode(response.body);
@@ -132,7 +136,7 @@ class WebRepository {
     http.Response response;
 
     try {
-      response = await client.put('$url$journeyEndpoint$imageEndpoint',
+      response = await client.put('$baseUrl$journeyEndpoint$imageEndpoint',
           body: jsonStr, headers: {'Content-Type': 'application/json'});
     } catch (e) {
       return Future.value(-1);
@@ -149,18 +153,19 @@ class WebRepository {
   }
 
   Future<Map<String, dynamic>> loadArtist(int artistId) async {
-    http.Response response = await client.get('$url$artistEndpoint/$artistId');
+    http.Response response =
+        await client.get('$baseUrl$artistEndpoint/$artistId');
     print('GET $artistEndpoint/$artistId ${response.reasonPhrase}'
-          ' (${response.statusCode}): ${response.body}');
+        ' (${response.statusCode}): ${response.body}');
 
     // If getting the artist fails, wait and then try again up to 10 times
     int limit = 0;
     while (response.statusCode != 200 && limit < 10) {
       sleep(Duration(milliseconds: 100));
 
-      response = await client.get('$url$artistEndpoint/$artistId');
+      response = await client.get('$baseUrl$artistEndpoint/$artistId');
       print('Retry: GET $artistEndpoint/$artistId ${response.reasonPhrase}'
-            ' (${response.statusCode}): ${response.body}');
+          ' (${response.statusCode}): ${response.body}');
       limit++;
     }
 
@@ -172,9 +177,11 @@ class WebRepository {
   }
 
   Future<Map<String, dynamic>> loadUser(int userId) async {
-    final http.Response response = await client.get('$url$userEndpoint/$userId');
+    final http.Response response =
+        await client.get('$baseUrl$userEndpoint/$userId');
 
-    print('GET $userEndpoint/$userId ${response.reasonPhrase} (${response.statusCode}):');
+    print(
+        'GET $userEndpoint/$userId ${response.reasonPhrase} (${response.statusCode}):');
     print('${response.body}');
 
     if (response.statusCode != 200) {
@@ -186,7 +193,8 @@ class WebRepository {
   Future<List<String>> loadImages(int id) async {
     print('journey_id = $id');
 
-    final http.Response response = await client.get('$url$journeyEndpoint/$id$imagesEndpoint');
+    final http.Response response =
+        await client.get('$baseUrl$journeyEndpoint/$id$imagesEndpoint');
 
     print(
         '$journeyEndpoint/$id$imagesEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -205,7 +213,8 @@ class WebRepository {
     while (imageData.isEmpty && limit < 10) {
       sleep(Duration(milliseconds: 100));
 
-      final http.Response response = await client.get('$url$journeyEndpoint/$id$imagesEndpoint');
+      final http.Response response =
+          await client.get('$baseUrl$journeyEndpoint/$id$imagesEndpoint');
 
       print(
           '$journeyEndpoint/$id$imagesEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -227,9 +236,11 @@ class WebRepository {
   }
 
   Future<Map<String, dynamic>> loadStudio(int studioID) async {
-    final http.Response response = await client.get('$url$studiosEndpoint/$studioID');
+    final http.Response response =
+        await client.get('$baseUrl$studiosEndpoint/$studioID');
 
-    print('GET $studiosEndpoint/$studioID ${response.reasonPhrase} (${response.statusCode}):');
+    print(
+        'GET $studiosEndpoint/$studioID ${response.reasonPhrase} (${response.statusCode}):');
     print('${response.body}');
 
     if (response.statusCode != 200) {
@@ -240,7 +251,7 @@ class WebRepository {
   }
 
   Future<List<Map<String, dynamic>>> loadStudios() async {
-    final http.Response response = await client.get('$url$studiosEndpoint');
+    final http.Response response = await client.get('$baseUrl$studiosEndpoint');
 
     print(
         'GET $studiosEndpoint ${response.reasonPhrase} (${response.statusCode}): ${response.body}');
@@ -254,11 +265,14 @@ class WebRepository {
     return mappedStudios;
   }
 
-  Future<int> updateJourneyRow(Map<String, dynamic> journeyMap, int journeyId) async {
+  Future<int> updateJourneyRow(
+      Map<String, dynamic> journeyMap, int journeyId) async {
     final String jsonStr = jsonEncode(journeyMap);
 
-    final http.Response response = await client.patch('$url$journeyEndpoint/$journeyId',
-        body: jsonStr, headers: {'Content-Type': 'application/json'});
+    final http.Response response = await client.patch(
+        '$baseUrl$journeyEndpoint/$journeyId',
+        body: jsonStr,
+        headers: {'Content-Type': 'application/json'});
 
     print('PATCH $journeyEndpoint/$journeyId ${response.reasonPhrase} '
         '(${response.statusCode}): ${response.body}');
@@ -276,8 +290,10 @@ class WebRepository {
     http.Response response;
 
     try {
-      response = await client.put('$url$journeyEndpoint$imageEndpoint$tattooEndpoint',
-          body: jsonStr, headers: {'Content-Type': 'application/json'});
+      response = await client.put(
+          '$baseUrl$journeyEndpoint$imageEndpoint$tattooEndpoint',
+          body: jsonStr,
+          headers: {'Content-Type': 'application/json'});
     } catch (e) {
       print(e);
       return false;
@@ -298,14 +314,15 @@ class WebRepository {
     http.Response response;
 
     try {
-      response = await client.put('$url$userEndpoint/$id$emailEndpoint',
+      response = await client.put('$baseUrl$userEndpoint/$id$emailEndpoint',
           body: jsonStr, headers: {'Content-Type': 'application/json'});
     } catch (e) {
       print(e);
       return true;
     }
 
-    print('$userEndpoint/$id$emailEndpoint ${response.reasonPhrase} (${response.statusCode}): '
+    print(
+        '$userEndpoint/$id$emailEndpoint ${response.reasonPhrase} (${response.statusCode}): '
         '${response.body}');
 
     if (response.statusCode == 200) {
@@ -317,8 +334,10 @@ class WebRepository {
   Future<int> updateUserRow(Map<String, String> userMap, int userId) async {
     final String jsonStr = jsonEncode(userMap);
 
-    final http.Response response = await client.patch('$url$userEndpoint/$userId',
-        body: jsonStr, headers: {'Content-Type': 'application/json'});
+    final http.Response response = await client.patch(
+        '$baseUrl$userEndpoint/$userId',
+        body: jsonStr,
+        headers: {'Content-Type': 'application/json'});
 
     print('PATCH $userEndpoint/$userId ${response.reasonPhrase} '
         '(${response.statusCode}): ${response.body}');

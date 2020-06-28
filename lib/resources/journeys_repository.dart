@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -23,8 +22,11 @@ class JourneysRepository {
 
   // Loads journeys from a Web Client.
   Future<List<JourneyEntity>> loadJourneys({@required int userId}) async {
-    final List<Map<String, dynamic>> mapped = await webClient.loadJourneys(userId);
-    return mapped.map((jsonJourney) => JourneyEntity.fromJson(jsonJourney)).toList();
+    final List<Map<String, dynamic>> mapped =
+        await webClient.loadJourneys(userId);
+    return mapped
+        .map((jsonJourney) => JourneyEntity.fromJson(jsonJourney))
+        .toList();
   }
 
   Future<JourneyEntity> loadJourney({@required int id}) async {
@@ -34,7 +36,8 @@ class JourneysRepository {
 
   // Persists journeys to the web
   Future<int> saveJourneys(List<EmptyJourneyEntity> journeys) async {
-    final journeysMap = journeys.map<Map<String, dynamic>>((j) => j.toJson()).toList();
+    final journeysMap =
+        journeys.map<Map<String, dynamic>>((j) => j.toJson()).toList();
     return await webClient.saveJourneys(journeysMap);
   }
 
@@ -47,7 +50,7 @@ class JourneysRepository {
   }
 
   Future<int> saveImage(int journeyId, Asset img) async {
-    final ByteData byteData = await img.requestThumbnail(800, 800);
+    final ByteData byteData = await img.getThumbByteData(800, 800);
     final List<int> data = byteData.buffer.asUint8List();
 
     final Map imageMap = <String, dynamic>{
@@ -57,7 +60,8 @@ class JourneysRepository {
 
     int sendLimit = 10;
     int imageId = -1;
-    while ((imageId = await webClient.saveImage(imageMap)) == -1 && sendLimit > 0) {
+    while ((imageId = await webClient.saveImage(imageMap)) == -1 &&
+        sendLimit > 0) {
       sendLimit--;
     }
 
@@ -86,13 +90,14 @@ class JourneysRepository {
   }
 
   Future<int> updateStage(JourneyStage updateStage, int journeyId) async {
-    final Map<String, int> journeyMap = {'Stage': updateStage.numberRepresentation};
+    final Map<String, int> journeyMap = {
+      'Stage': updateStage.numberRepresentation
+    };
     return await webClient.updateJourneyRow(journeyMap, journeyId);
   }
 
-  Future<bool> sendArtistPhoto(File imageData, int journeyId) async {
-    final List<int> bytes = imageData.readAsBytesSync();
-    final String encodedImage = base64Encode(bytes);
+  Future<bool> sendArtistPhoto(List<int> imageBytes, int journeyId) async {
+    final String encodedImage = base64Encode(imageBytes);
 
     final Map<String, dynamic> photoMap = <String, dynamic>{
       'image_data': encodedImage,

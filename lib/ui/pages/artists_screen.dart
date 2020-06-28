@@ -12,9 +12,12 @@ import 'package:inkstep/resources/web_repository.dart';
 import 'package:inkstep/utils/screen_navigator.dart';
 
 class ArtistSelectionScreen extends StatefulWidget {
-  ArtistSelectionScreen({
+  const ArtistSelectionScreen({
     Key key,
+    this.baseUrl,
   }) : super(key: key);
+
+  final String baseUrl;
 
   @override
   State<StatefulWidget> createState() => ArtistSelectionScreenState();
@@ -31,7 +34,10 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
     _client = http.Client();
     _artistsBloc = ArtistsBloc(
       artistsRepository: ArtistsRepository(
-        webClient: WebRepository(client: _client),
+        webClient: WebRepository(
+          client: _client,
+          baseUrl: widget.baseUrl,
+        ),
       ),
     );
     _artistsBloc.dispatch(LoadArtists(0));
@@ -57,17 +63,7 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
           body: BlocBuilder(
             bloc: _artistsBloc,
             builder: (BuildContext context, ArtistsState state) {
-              if (state is ArtistsUninitialised) {
-                return Container(
-                  color: Theme.of(context).backgroundColor,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).cardColor),
-                    ),
-                  ),
-                );
-              } else if (state is ArtistsLoaded) {
+              if (state is ArtistsLoaded) {
                 return Container(
                   color: Theme.of(context).backgroundColor,
                   child: SafeArea(
@@ -89,39 +85,48 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
                             builder: (context, constraint) {
                               final height = constraint.maxHeight;
                               final width = constraint.maxWidth;
-                              final double offset = selected ? 0.0 : -width * 0.10;
+                              final double offset =
+                                  selected ? 0.0 : -width * 0.10;
                               return Swiper(
                                   loop: true,
                                   viewportFraction: 0.7,
                                   itemCount: state.artists.length,
                                   layout: SwiperLayout.CUSTOM,
-                                  customLayoutOption:
-                                      CustomLayoutOption(startIndex: 0, stateCount: 5).addTranslate(
+                                  customLayoutOption: CustomLayoutOption(
+                                          startIndex: 0, stateCount: 5)
+                                      .addTranslate(
                                     [
                                       Offset(-width * 0.75 * 2 + offset, 0.0),
-                                      Offset(-width * 0.75 + offset, height * 0.025),
+                                      Offset(-width * 0.75 + offset,
+                                          height * 0.025),
                                       Offset(offset, 0.0),
-                                      Offset(width * 0.75 + offset, height * 0.025),
+                                      Offset(width * 0.75 + offset,
+                                          height * 0.025),
                                       Offset(width * 0.75 * 2 + offset, 0.0),
                                     ],
-                                  ).addScale([0.5, 0.95, 1, 0.95, 0.5], Alignment.center),
+                                  ).addScale([0.5, 0.95, 1, 0.95, 0.5],
+                                          Alignment.center),
                                   itemWidth: 300.0,
                                   itemHeight: height,
                                   itemBuilder: (context, idx) {
                                     final card = Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Expanded(
                                           child: Card(
                                             color: Colors.black,
-                                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
                                             child: FadeInImage.assetNetwork(
                                               placeholder: 'assets/ricky.png',
-                                              image: state.artists[idx].profileUrl,
+                                              image:
+                                                  state.artists[idx].profileUrl,
                                               fit: BoxFit.cover,
                                             ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
                                             ),
                                             elevation: 10,
                                             margin: EdgeInsets.all(10),
@@ -129,11 +134,14 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
                                         ),
                                         Text(
                                           state.artists[idx].name,
-                                          style: Theme.of(context).textTheme.title,
+                                          style:
+                                              Theme.of(context).textTheme.title,
                                         ),
                                         Text(
                                           state.artists[idx].studio.name,
-                                          style: Theme.of(context).textTheme.subtitle,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle,
                                         )
                                       ],
                                     );
@@ -141,11 +149,13 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
                                       child: Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          splashColor: Colors.grey[50].withOpacity(0.2),
+                                          splashColor:
+                                              Colors.grey[50].withOpacity(0.2),
                                           onTap: () {
-                                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
-                                            nav.openNewJourneyScreen(
-                                                context, state.artists[idx].artistID);
+                                            final ScreenNavigator nav =
+                                                sl.get<ScreenNavigator>();
+                                            nav.openNewJourneyScreen(context,
+                                                state.artists[idx].artistID);
                                           },
                                         ),
                                       ),
@@ -166,6 +176,16 @@ class ArtistSelectionScreenState extends State<ArtistSelectionScreen> {
                   ),
                 );
               }
+              return Container(
+                color: Theme.of(context).backgroundColor,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.0,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).cardColor),
+                  ),
+                ),
+              );
             },
           ),
         ));

@@ -13,6 +13,7 @@ import 'package:inkstep/ui/pages/onboarding_required_info.dart';
 import 'package:inkstep/ui/pages/single_journey_screen.dart';
 import 'package:inkstep/ui/pages/studios_screen.dart';
 import 'package:inkstep/ui/routes/scale_page_route.dart';
+import 'package:inkstep/utils/app_config.dart';
 
 import 'info_navigator.dart';
 
@@ -22,15 +23,16 @@ class ScreenNavigator {
   }
 
   void openOnboardingPage(BuildContext context) {
-    Navigator.pushReplacement<dynamic, dynamic>(
-        context, MaterialPageRoute<dynamic>(builder: (context) => Onboarding()));
+    Navigator.pushReplacement<dynamic, dynamic>(context,
+        MaterialPageRoute<dynamic>(builder: (context) => Onboarding()));
   }
 
   void openOnboardingRequiredInfoPage(BuildContext context) {
     Navigator.pushReplacement<dynamic, dynamic>(
         context,
         MaterialPageRoute<dynamic>(
-            builder: (context) => OnboardingRequiredInfo(), fullscreenDialog: true));
+            builder: (context) => OnboardingRequiredInfo(),
+            fullscreenDialog: true));
   }
 
   void openViewJourneysScreen(BuildContext context) {
@@ -38,8 +40,8 @@ class ScreenNavigator {
       context,
       MaterialPageRoute<dynamic>(
         builder: (context) => JourneysScreen(
-              onInit: () {},
-            ),
+          onInit: () {},
+        ),
       ),
     );
   }
@@ -57,24 +59,32 @@ class ScreenNavigator {
       MaterialPageRoute<dynamic>(
           builder: (context) => JourneysScreen(
                 onInit: () {
-                  final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
+                  final JourneysBloc journeyBloc =
+                      BlocProvider.of<JourneysBloc>(context);
                   journeyBloc.dispatch(LoadUser(userId));
                 },
               )),
     );
   }
 
+  Widget buildArtistsSelectionScreen(BuildContext context) {
+    final config = AppConfig.of(context);
+    return ArtistSelectionScreen(
+      baseUrl: config.apiUrl,
+    );
+  }
+
   void openArtistSelectionReplace(BuildContext context) {
     Navigator.pushReplacement<dynamic, dynamic>(
       context,
-      MaterialPageRoute<dynamic>(builder: (context) => ArtistSelectionScreen()),
+      MaterialPageRoute<dynamic>(builder: buildArtistsSelectionScreen),
     );
   }
 
   void openArtistSelection(BuildContext context) {
     Navigator.push<dynamic>(
       context,
-      MaterialPageRoute<dynamic>(builder: (context) => ArtistSelectionScreen()),
+      MaterialPageRoute<dynamic>(builder: buildArtistsSelectionScreen),
     );
   }
 
@@ -83,7 +93,7 @@ class ScreenNavigator {
       context,
       ScaleRoute(
         rect: rect,
-        child: ArtistSelectionScreen(),
+        child: buildArtistsSelectionScreen(context),
       ),
     );
   }
@@ -114,7 +124,8 @@ class ScreenNavigator {
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-          builder: (context) => SingleJourneyScreen(card: card), fullscreenDialog: true),
+          builder: (context) => SingleJourneyScreen(card: card),
+          fullscreenDialog: true),
     );
   }
 }

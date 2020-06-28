@@ -5,7 +5,7 @@ import 'package:inkstep/utils/info_navigator.dart';
 import 'info_widget.dart';
 
 class StyleScreen extends StatefulWidget {
-  StyleScreen({
+  const StyleScreen({
     Key key,
     @required this.styleController,
     this.navigator,
@@ -15,7 +15,8 @@ class StyleScreen extends StatefulWidget {
   final InfoNavigator navigator;
 
   @override
-  State<StatefulWidget> createState() => _StyleScreenState(styleController, navigator);
+  State<StatefulWidget> createState() =>
+      _StyleScreenState(styleController, navigator);
 }
 
 class _StyleScreenState extends State<StyleScreen> {
@@ -56,7 +57,8 @@ class StyleScreenWidget extends InfoWidget {
     Style(
       name: 'Abstract',
       images: ['assets/style-abstract-1.jpg', 'assets/style-abstract-2.jpg'],
-      description: 'Abstract tattoos draw heavily from early surrealist painters. '
+      description:
+          'Abstract tattoos draw heavily from early surrealist painters. '
           'The word ‘abstract’ refers to ideas that do not have a physical form. '
           'In art, this represents work that is complex and layered, '
           'and often appears to not have any structure’. '
@@ -210,7 +212,8 @@ class StyleScreenWidget extends InfoWidget {
         Expanded(
           child: ListView.builder(
             itemCount: styles.length,
-            itemBuilder: (context, idx) => _styleBuilder(context, orderedStyles[idx]),
+            itemBuilder: (context, idx) =>
+                _styleBuilder(context, orderedStyles[idx]),
           ),
         )
       ],
@@ -232,9 +235,9 @@ class StyleScreenWidget extends InfoWidget {
               scrollDirection: Axis.horizontal,
               itemCount: style.images.length,
               itemBuilder: (context, idx) => Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Image.asset(style.images[idx]),
-                  ),
+                padding: EdgeInsets.all(8.0),
+                child: Image.asset(style.images[idx]),
+              ),
               padding: EdgeInsets.only(left: 64.0),
             ),
           ),

@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inkstep/models/form_result_model.dart';
 import 'package:inkstep/models/user_model.dart';
 import 'package:meta/meta.dart';
@@ -105,7 +104,7 @@ class LogOut extends JourneysEvent {
 class SendPhoto extends JourneysEvent {
   SendPhoto(this.imageData, this.userId, this.artistId, this.journeyId);
 
-  final File imageData;
+  final PickedFile imageData;
   final int userId;
   final int artistId;
   final int journeyId;

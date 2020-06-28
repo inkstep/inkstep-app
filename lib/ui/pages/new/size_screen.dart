@@ -10,7 +10,7 @@ import 'package:inkstep/utils/info_navigator.dart';
 import 'info_widget.dart';
 
 class SizeSelectorScreen extends StatefulWidget {
-  SizeSelectorScreen({
+  const SizeSelectorScreen({
     Key key,
     @required this.widthController,
     @required this.heightController,
@@ -27,7 +27,8 @@ class SizeSelectorScreen extends StatefulWidget {
 }
 
 class _SizeSelectorScreenState extends State<SizeSelectorScreen> {
-  _SizeSelectorScreenState(this.widthController, this.heightController, this.navigator) {
+  _SizeSelectorScreenState(
+      this.widthController, this.heightController, this.navigator) {
     listener = () {
       setState(() {});
     };
@@ -42,7 +43,8 @@ class _SizeSelectorScreenState extends State<SizeSelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SizeSelectorWidget(widthController, heightController, navigator, (_) {});
+    return SizeSelectorWidget(
+        widthController, heightController, navigator, (_) {});
   }
 
   @override
@@ -54,7 +56,8 @@ class _SizeSelectorScreenState extends State<SizeSelectorScreen> {
 }
 
 class SizeSelectorWidget extends InfoWidget {
-  SizeSelectorWidget(this.widthController, this.heightController, this.navigator, this.callback);
+  SizeSelectorWidget(this.widthController, this.heightController,
+      this.navigator, this.callback);
 
   final TextEditingController widthController;
   final TextEditingController heightController;
@@ -89,7 +92,8 @@ class SizeSelectorWidget extends InfoWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(flex: 6, child: _buildNumberInputBox(widthController, context)),
+            Expanded(
+                flex: 6, child: _buildNumberInputBox(widthController, context)),
             Spacer(),
             Flexible(
               flex: 3,
@@ -99,7 +103,9 @@ class SizeSelectorWidget extends InfoWidget {
               ),
             ),
             Spacer(),
-            Expanded(flex: 6, child: _buildNumberInputBox(heightController, context)),
+            Expanded(
+                flex: 6,
+                child: _buildNumberInputBox(heightController, context)),
             Flexible(
               flex: 2,
               child: Text(
@@ -149,7 +155,8 @@ class SizeSelectorWidget extends InfoWidget {
     return width * height > lower && width * height <= upper;
   }
 
-  Widget _buildNumberInputBox(TextEditingController textController, BuildContext context) {
+  Widget _buildNumberInputBox(
+      TextEditingController textController, BuildContext context) {
     return Container(
       width: 430.0,
       child: ShortTextInputFormElement(

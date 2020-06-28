@@ -34,7 +34,8 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
       // iOS Specific
       firebase.requestNotificationPermissions(
           const IosNotificationSettings(sound: true, badge: true, alert: true));
-      firebase.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+      firebase.onIosSettingsRegistered
+          .listen((IosNotificationSettings settings) {
         print('Settings registered: $settings');
       });
     }
@@ -90,7 +91,8 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
     if (currentState is JourneysWithUser) {
       final JourneysWithUser userState = currentState;
 
-      final List<CardModel> loadedCards = await Future.wait<CardModel>(userState.cards);
+      final List<CardModel> loadedCards =
+          await Future.wait<CardModel>(userState.cards);
 
       final CardModel correctCard = loadedCards.firstWhere(
         (card) => card.journeyId == event.journeyId,
@@ -98,10 +100,13 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
 
       final card = await _getCard(event.journeyId, correctCard.index);
 
-      print('Reloaded ${card.index}th card for user ${userState.user.id}: $card');
+      print(
+          'Reloaded ${card.index}th card for user ${userState.user.id}: $card');
 
       final reloadedCards = loadedCards
-          .map((c) => c.journeyId == event.journeyId ? Future.value(card) : Future.value(c))
+          .map((c) => c.journeyId == event.journeyId
+              ? Future.value(card)
+              : Future.value(c))
           .toList();
 
       yield JourneysWithUser(
@@ -110,7 +115,8 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
         firstTime: userState.firstTime ?? true,
       );
     } else {
-      print('Trying to call Load Journey ${event.journeyId} when not authenticated with a user.');
+      print(
+          'Trying to call Load Journey ${event.journeyId} when not authenticated with a user.');
     }
   }
 
@@ -161,10 +167,12 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
     }
 
     // Now send the corresponding journey
-    final EmptyJourneyEntity newJourney = _emptyJourneyEntityFromFormResult(userId, event.result);
+    final EmptyJourneyEntity newJourney =
+        _emptyJourneyEntityFromFormResult(userId, event.result);
 
     print('About to save the journey: $newJourney');
-    final int journeyId = await journeysRepository.saveJourneys(<EmptyJourneyEntity>[newJourney]);
+    final int journeyId =
+        await journeysRepository.saveJourneys(<EmptyJourneyEntity>[newJourney]);
 
     List<Future<CardModel>> oldCards = [];
 
@@ -176,27 +184,33 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
     final List<Image> loadingImages = [];
 
     for (int i = 0; i < event.result.images.length; i++) {
-      final ByteData byteData = await event.result.images[i].requestThumbnail(200, 200);
+      final ByteData byteData =
+          await event.result.images[i].getThumbByteData(200, 200);
 
       loadingImages.add(Image.memory(byteData.buffer.asUint8List()));
     }
 
-    yield JourneysWithUser(cards: [
-      Future.value(CardModel(
-          description: event.result.description,
-          size: event.result.size,
-          artistId: event.result.artistID,
-          artistName: '',
-          userId: userId,
-          bodyLocation: event.result.position,
-          images: loadingImages,
-          quote: TextRange(start: -1, end: -1),
-          stage: WaitingForQuote(),
-          index: null,
-          palette: PaletteGenerator.fromColors([PaletteColor(Colors.blue, 100)]),
-          journeyId: null,
-          bookedDate: null))
-    ] + oldCards, user: user, firstTime: firstTime);
+    yield JourneysWithUser(
+        cards: [
+              Future.value(CardModel(
+                  description: event.result.description,
+                  size: event.result.size,
+                  artistId: event.result.artistID,
+                  artistName: '',
+                  userId: userId,
+                  bodyLocation: event.result.position,
+                  images: loadingImages,
+                  quote: TextRange(start: -1, end: -1),
+                  stage: WaitingForQuote(),
+                  index: null,
+                  palette: PaletteGenerator.fromColors(
+                      [PaletteColor(Colors.blue, 100)]),
+                  journeyId: null,
+                  bookedDate: null))
+            ] +
+            oldCards,
+        user: user,
+        firstTime: firstTime);
 
     if (journeyId == -1) {
       print('Failed to save journeys');
@@ -212,34 +226,41 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
       user = user ?? await journeysRepository.getUser(userId);
       print('Successfully loaded user $user');
 
-      yield JourneysWithUser(cards: cards, user: user, firstTime: firstTime); //?? true);
-      print(JourneysWithUser(cards: cards, user: user, firstTime: firstTime)); //?? true));
+      yield JourneysWithUser(
+          cards: cards, user: user, firstTime: firstTime); //?? true);
+      print(JourneysWithUser(
+          cards: cards, user: user, firstTime: firstTime)); //?? true));
       return;
     }
   }
 
-  Stream<JourneysState> _mapShownFeatureDiscoveryToState(ShownFeatureDiscovery event) async* {
+  Stream<JourneysState> _mapShownFeatureDiscoveryToState(
+      ShownFeatureDiscovery event) async* {
     if (currentState is JourneysWithUser) {
       final prefs = await SharedPreferences.getInstance();
       prefs.setBool('firstTime', false);
       print('firstTime set to false');
       final JourneysWithUser jwu = currentState;
-      yield JourneysWithUser(user: jwu.user, cards: jwu.cards, firstTime: false);
+      yield JourneysWithUser(
+          user: jwu.user, cards: jwu.cards, firstTime: false);
     }
   }
 
   Stream<JourneysState> _mapDialogToState(DialogJourneyEvent event) async* {
     assert(currentState is JourneysWithUser);
     if (event is QuoteAccepted) {
-      await journeysRepository.updateStage(AppointmentOfferReceived(null, null), event.journeyId);
+      await journeysRepository.updateStage(
+          AppointmentOfferReceived(null, null), event.journeyId);
     } else if (event is DateDenied) {
       await journeysRepository.updateStage(WaitingList(null), event.journeyId);
     } else if (event is DateAccepted) {
-      await journeysRepository.updateStage(BookedIn(null, null), event.journeyId);
+      await journeysRepository.updateStage(
+          BookedIn(null, null), event.journeyId);
     }
   }
 
-  EmptyJourneyEntity _emptyJourneyEntityFromFormResult(int userId, FormResult result) {
+  EmptyJourneyEntity _emptyJourneyEntityFromFormResult(
+      int userId, FormResult result) {
     return EmptyJourneyEntity(
         userId: userId,
         artistId: result.artistID,
@@ -272,11 +293,13 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
 
       print('Reloaded cards for user ${userState.user.id}: $cards');
 
-      yield JourneysWithUser(cards: cards, user: userState.user, firstTime: firstTime ?? true);
+      yield JourneysWithUser(
+          cards: cards, user: userState.user, firstTime: firstTime ?? true);
     }
   }
 
-  List<Future<CardModel>> _mergeCards(List<Future<CardModel>> c1, List<Future<CardModel>> c2) {
+  List<Future<CardModel>> _mergeCards(
+      List<Future<CardModel>> c1, List<Future<CardModel>> c2) {
     return Set<Future<CardModel>>.from(c1).union(c2.toSet()).toList();
   }
 
@@ -308,14 +331,16 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
 
   Future<List<Future<CardModel>>> _getCards(int userId) async {
     print('Loading cards for $userId');
-    final List<JourneyEntity> journeys = await journeysRepository.loadJourneys(userId: userId);
+    final List<JourneyEntity> journeys =
+        await journeysRepository.loadJourneys(userId: userId);
     print('Done that...');
     return _getCardsFromJourneys(journeys);
   }
 
   Future<CardModel> _getCard(int journeyId, int index) async {
     print('Updating card with $journeyId');
-    final JourneyEntity journey = await journeysRepository.loadJourney(id: journeyId);
+    final JourneyEntity journey =
+        await journeysRepository.loadJourney(id: journeyId);
     print('Done that...');
     return _getCardFromJourney(journey, index);
   }
@@ -334,10 +359,12 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
     final List<Image> images = [];
 
     for (int i = 0; i < je.noImages; i++) {
-      images.add(Image.network('http://inkstep.hails.info/journey/${je.id}/thumb/$i'));
+      images.add(
+          Image.network('http://inkstep.hails.info/journey/${je.id}/thumb/$i'));
     }
 
-    final ArtistEntity artist = await journeysRepository.loadArtist(je.artistId);
+    final ArtistEntity artist =
+        await journeysRepository.loadArtist(je.artistId);
 
     final List<PaletteColor> palettes = <PaletteColor>[];
     for (ImageProvider img in images.map((img) => img.image)) {
@@ -392,7 +419,8 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
   }
 
   Stream<JourneysState> _mapSendPhotoToState(SendPhoto event) async* {
-    await journeysRepository.sendArtistPhoto(event.imageData, event.journeyId);
+    await journeysRepository.sendArtistPhoto(
+        await event.imageData.readAsBytes(), event.journeyId);
     await journeysRepository.updateStage(Finished(), event.journeyId);
   }
 
@@ -400,14 +428,16 @@ class JourneysBloc extends Bloc<JourneysEvent, JourneysState> {
     journeysRepository.removeJourney(event.journeyId);
     if (currentState is JourneysWithUser) {
       final JourneysWithUser userState = currentState;
-      final List<CardModel> loadedCards = await Future.wait<CardModel>(userState.cards);
+      final List<CardModel> loadedCards =
+          await Future.wait<CardModel>(userState.cards);
 
       // Create mutable copy to remove from
       final List<CardModel> mutableLoadedCards = List.from(loadedCards);
       mutableLoadedCards.removeWhere(
         (card) => card.journeyId == event.journeyId,
       );
-      final reloadedCards = mutableLoadedCards.map((c) => Future.value(c)).toList();
+      final reloadedCards =
+          mutableLoadedCards.map((c) => Future.value(c)).toList();
 
       yield JourneysWithUser(
         cards: reloadedCards,

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +24,8 @@ class JourneyCard extends StatefulWidget {
   _JourneyCardState createState() => _JourneyCardState();
 }
 
-class _JourneyCardState extends State<JourneyCard> with SingleTickerProviderStateMixin {
+class _JourneyCardState extends State<JourneyCard>
+    with SingleTickerProviderStateMixin {
   Animation<double> loopedAnimation;
   AnimationController loopController;
 
@@ -34,17 +33,19 @@ class _JourneyCardState extends State<JourneyCard> with SingleTickerProviderStat
   void initState() {
     super.initState();
 
-    loopController = AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    loopedAnimation = CurvedAnimation(parent: loopController, curve: Curves.easeIn)
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          loopController.reverse();
-        } else if (status == AnimationStatus.dismissed) {
-          loopController.forward();
-        }
-        // Mark widget as dirty
-        setState(() {});
-      });
+    loopController =
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    loopedAnimation =
+        CurvedAnimation(parent: loopController, curve: Curves.easeIn)
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              loopController.reverse();
+            } else if (status == AnimationStatus.dismissed) {
+              loopController.forward();
+            }
+            // Mark widget as dirty
+            setState(() {});
+          });
 
     loopController.forward();
   }
@@ -146,7 +147,8 @@ class LoadedJourneyCard extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = card.palette.vibrantColor?.color ?? Theme.of(context).accentColor;
+    final Color accentColor =
+        card.palette.vibrantColor?.color ?? Theme.of(context).accentColor;
 
     bool showCare = false;
 
@@ -154,7 +156,8 @@ class LoadedJourneyCard extends AnimatedWidget {
       showCare = true;
     }
 
-    final _elevationTween = Tween<double>(begin: card.stage.userActionRequired ? 0.95 : 1, end: 1);
+    final _elevationTween =
+        Tween<double>(begin: card.stage.userActionRequired ? 0.95 : 1, end: 1);
 
     return Card(
       margin: EdgeInsets.zero,
@@ -182,14 +185,17 @@ class LoadedJourneyCard extends AnimatedWidget {
                           stage: card.stage,
                           artistName: card.artistName,
                           onAcceptance: () {
-                            final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
+                            final JourneysBloc journeyBloc =
+                                BlocProvider.of<JourneysBloc>(context);
                             journeyBloc.dispatch(QuoteAccepted(card.journeyId));
                             card.stage = WaitingForAppointmentOffer(card.quote);
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                           },
                           onDenial: () {
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                             showDialog<dynamic>(
                               context: context,
@@ -207,33 +213,43 @@ class LoadedJourneyCard extends AnimatedWidget {
                           stage: card.stage,
                           artistName: card.artistName,
                           onAcceptance: () {
-                            final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
+                            final JourneysBloc journeyBloc =
+                                BlocProvider.of<JourneysBloc>(context);
                             journeyBloc.dispatch(DateAccepted(card.journeyId));
                             card.stage = BookedIn(card.bookedDate, card.quote);
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                           },
                           onDenial: () {
-                            final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
+                            final JourneysBloc journeyBloc =
+                                BlocProvider.of<JourneysBloc>(context);
                             journeyBloc.dispatch(DateDenied(card.journeyId));
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                           },
                         );
                       } else if (card.stage is Healed) {
                         dialog = PictureDialog(
                           onAcceptance: () async {
-                            final File image = await ImagePicker.pickImage(
-                                source: ImageSource.camera, maxHeight: 800, maxWidth: 800);
-                            final JourneysBloc journeyBloc = BlocProvider.of<JourneysBloc>(context);
-                            journeyBloc.dispatch(
-                                SendPhoto(image, card.userId, card.artistId, card.journeyId));
+                            final PickedFile image = await ImagePicker()
+                                .getImage(
+                                    source: ImageSource.camera,
+                                    maxHeight: 800,
+                                    maxWidth: 800);
+                            final JourneysBloc journeyBloc =
+                                BlocProvider.of<JourneysBloc>(context);
+                            journeyBloc.dispatch(SendPhoto(image, card.userId,
+                                card.artistId, card.journeyId));
                             card.stage = Finished();
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                           },
                           onDenial: () {
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.pop(context);
                           },
                         );
@@ -254,7 +270,9 @@ class LoadedJourneyCard extends AnimatedWidget {
                           barrierDismissible: true,
                           barrierLabel: '',
                           context: context,
-                          pageBuilder: (context, animation1, animation2) {},
+                          pageBuilder: (context, animation1, animation2) {
+                            return null;
+                          },
                         );
                       }
                     },
@@ -270,10 +288,13 @@ class LoadedJourneyCard extends AnimatedWidget {
                         ),
                       ),
                       child: Chip(
-                        avatar: card.stage.userActionRequired ? Icon(Icons.error) : null,
+                        avatar: card.stage.userActionRequired
+                            ? Icon(Icons.error)
+                            : null,
                         label: Text(card.stage.toString()),
                         backgroundColor: accentColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
                   ),
@@ -283,7 +304,8 @@ class LoadedJourneyCard extends AnimatedWidget {
                           icon: Icons.healing,
                           featureId: card.aftercareID,
                           onPressed: () {
-                            final ScreenNavigator nav = sl.get<ScreenNavigator>();
+                            final ScreenNavigator nav =
+                                sl.get<ScreenNavigator>();
                             nav.openCareScreen(context, card.bookedDate);
                           },
                         )
@@ -300,7 +322,8 @@ class LoadedJourneyCard extends AnimatedWidget {
             ),
             Divider(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
               child: Chip(
                 avatar: CircleAvatar(
                   backgroundImage: AssetImage('assets/ricky.png'),
@@ -312,7 +335,8 @@ class LoadedJourneyCard extends AnimatedWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
               child: Text(
                 '${card.description}',
                 style: Theme.of(context).accentTextTheme.title.copyWith(
@@ -322,7 +346,8 @@ class LoadedJourneyCard extends AnimatedWidget {
             ),
             Spacer(),
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 32.0, bottom: 16.0),
+              padding:
+                  const EdgeInsets.only(left: 16.0, right: 32.0, bottom: 16.0),
               child: JourneyProgressIndicator(
                 color: accentColor,
                 progress: card.stage.progress,

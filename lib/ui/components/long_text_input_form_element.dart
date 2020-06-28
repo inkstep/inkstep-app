@@ -4,7 +4,7 @@ import 'package:inkstep/ui/components/form_element_builder.dart';
 import 'long_text_input.dart';
 
 class LongTextInputFormElement extends StatelessWidget {
-  LongTextInputFormElement({
+  const LongTextInputFormElement({
     @required this.textController,
     @required this.label,
     @required this.hint,
@@ -48,9 +48,7 @@ class LongTextInputFormElement extends StatelessWidget {
               flex: 20,
             ),
             Spacer(),
-            Text(
-              'You\'ll get to add some photos to show them in a minute.'
-            ),
+            Text('You\'ll get to add some photos to show them in a minute.'),
           ],
         );
       },
@@ -59,5 +57,3 @@ class LongTextInputFormElement extends StatelessWidget {
     );
   }
 }
-
-

@@ -10,27 +10,24 @@ class FeatureDiscovery extends StatefulWidget {
 
   static String activeStep(BuildContext context) {
     final _InheritedFeatureDiscovery state =
-        context.inheritFromWidgetOfExactType(_InheritedFeatureDiscovery);
+        context.dependOnInheritedWidgetOfExactType();
     return state.activeStepId;
   }
 
   static void discoverFeatures(BuildContext context, List<String> steps) {
-    final _FeatureDiscoveryState state =
-        context.ancestorStateOfType(TypeMatcher<_FeatureDiscoveryState>());
+    final _FeatureDiscoveryState state = context.findAncestorStateOfType();
 
     state.discoverFeatures(steps);
   }
 
   static void markStepComplete(BuildContext context, String stepId) {
-    final _FeatureDiscoveryState state =
-        context.ancestorStateOfType(TypeMatcher<_FeatureDiscoveryState>());
+    final _FeatureDiscoveryState state = context.findAncestorStateOfType();
 
     state.markStepComplete(stepId);
   }
 
   static void dismiss(BuildContext context) {
-    final _FeatureDiscoveryState state =
-        context.ancestorStateOfType(TypeMatcher<_FeatureDiscoveryState>());
+    final _FeatureDiscoveryState state = context.findAncestorStateOfType();
 
     state.dismiss();
   }
@@ -85,7 +82,7 @@ class _FeatureDiscoveryState extends State<FeatureDiscovery> {
 }
 
 class _InheritedFeatureDiscovery extends InheritedWidget {
-  _InheritedFeatureDiscovery({
+  const _InheritedFeatureDiscovery({
     this.activeStepId,
     Widget child,
   }) : super(child: child);
@@ -118,7 +115,8 @@ class DescribedFeatureOverlay extends StatefulWidget {
   final Widget child;
 
   @override
-  _DescribedFeatureOverlayState createState() => _DescribedFeatureOverlayState();
+  _DescribedFeatureOverlayState createState() =>
+      _DescribedFeatureOverlayState();
 }
 
 class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
@@ -338,13 +336,15 @@ class _Background extends StatelessWidget {
       switch (state) {
         case _OverlayState.opening:
           final adjustedPercent =
-              const Interval(0.0, 0.8, curve: Curves.easeOut).transform(transitionPercent);
-          return Offset.lerp(startingBackgroundPosition, endingBackgroundPosition, adjustedPercent);
+              const Interval(0.0, 0.8, curve: Curves.easeOut)
+                  .transform(transitionPercent);
+          return Offset.lerp(startingBackgroundPosition,
+              endingBackgroundPosition, adjustedPercent);
         case _OverlayState.activating:
           return endingBackgroundPosition;
         case _OverlayState.dismissing:
-          return Offset.lerp(
-              endingBackgroundPosition, startingBackgroundPosition, transitionPercent);
+          return Offset.lerp(endingBackgroundPosition,
+              startingBackgroundPosition, transitionPercent);
         default:
           return endingBackgroundPosition;
       }
@@ -353,12 +353,13 @@ class _Background extends StatelessWidget {
 
   double radius() {
     final isBackgroundCentered = isCloseToTopOrBottom(anchor);
-    final backgroundRadius = screenSize.width * (isBackgroundCentered ? 1.0 : 0.75);
+    final backgroundRadius =
+        screenSize.width * (isBackgroundCentered ? 1.0 : 0.75);
 
     switch (state) {
       case _OverlayState.opening:
-        final adjustedPercent =
-            const Interval(0.0, 0.8, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.0, 0.8, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return backgroundRadius * adjustedPercent;
       case _OverlayState.activating:
         return backgroundRadius + (transitionPercent * 40.0);
@@ -372,16 +373,16 @@ class _Background extends StatelessWidget {
   double backgroundOpacity() {
     switch (state) {
       case _OverlayState.opening:
-        final adjustedPercent =
-            const Interval(0.0, 0.3, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.0, 0.3, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return 0.96 * adjustedPercent;
       case _OverlayState.activating:
-        final adjustedPercent =
-            const Interval(0.1, 0.6, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.1, 0.6, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return 0.96 * (1.0 - adjustedPercent);
       case _OverlayState.dismissing:
-        final adjustedPercent =
-            const Interval(0.2, 1.0, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.2, 1.0, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return 0.96 * (1.0 - adjustedPercent);
       default:
         return 0.96;
@@ -458,13 +459,13 @@ class _Content extends StatelessWidget {
       case _OverlayState.closed:
         return 0.0;
       case _OverlayState.opening:
-        final adjustedPercent =
-            const Interval(0.6, 1.0, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.6, 1.0, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return adjustedPercent;
       case _OverlayState.activating:
       case _OverlayState.dismissing:
-        final adjustedPercent =
-            const Interval(0.0, 0.4, curve: Curves.easeOut).transform(transitionPercent);
+        final adjustedPercent = const Interval(0.0, 0.4, curve: Curves.easeOut)
+            .transform(transitionPercent);
         return 1.0 - adjustedPercent;
       default:
         return 1.0;
@@ -475,8 +476,11 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     final contentOrientation = getContentOrientation(anchor);
     final contentOffsetMultiplier =
-        contentOrientation == DescribedFeatureContentOrientation.below ? 1.0 : -1.0;
-    final contentY = anchor.dy + (contentOffsetMultiplier * (touchTargetRadius + 20));
+        contentOrientation == DescribedFeatureContentOrientation.below
+            ? 1.0
+            : -1.0;
+    final contentY =
+        anchor.dy + (contentOffsetMultiplier * (touchTargetRadius + 20));
     final contentFractionalOffset = contentOffsetMultiplier.clamp(-1.0, 0.0);
 
     return Positioned(
@@ -552,7 +556,8 @@ class _Pulse extends StatelessWidget {
   double opacity() {
     switch (state) {
       case _OverlayState.pulsing:
-        final percentOpaque = 1.0 - ((transitionPercent.clamp(0.3, 0.8) - 0.3) / 0.5);
+        final percentOpaque =
+            1.0 - ((transitionPercent.clamp(0.3, 0.8) - 0.3) / 0.5);
         return (percentOpaque * 0.75).clamp(0.0, 1.0);
       case _OverlayState.activating:
       case _OverlayState.dismissing:
@@ -627,10 +632,13 @@ class _TouchTarget extends StatelessWidget {
   double opacity() {
     switch (state) {
       case _OverlayState.opening:
-        return const Interval(0.0, 0.3, curve: Curves.easeOut).transform(transitionPercent);
+        return const Interval(0.0, 0.3, curve: Curves.easeOut)
+            .transform(transitionPercent);
       case _OverlayState.activating:
       case _OverlayState.dismissing:
-        return 1.0 - const Interval(0.7, 1.0, curve: Curves.easeOut).transform(transitionPercent);
+        return 1.0 -
+            const Interval(0.7, 1.0, curve: Curves.easeOut)
+                .transform(transitionPercent);
       default:
         return 1.0;
     }
