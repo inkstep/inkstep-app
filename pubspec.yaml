@@ -22,21 +22,21 @@ dependencies:
 
   firebase_analytics:
   firebase_messaging: ^5.0.0
-  flutter_swiper: ^1.1.6 # Latest
-  multi_image_picker: ^4.3.0 # Latest
-  auto_size_text: ^2.0.0 # Latest
-  bloc: ^0.14.1 # Latest
-  flutter_bloc: ^0.15.0 # Latest
-  get_it: ^1.0.3 # Latest 1.0.3+1
-  equatable: ^0.2.5 # Latest
-  http: ^0.12.0 # Latest 0.12.0+2
-  palette_generator: ^0.1.1 # Latest
-  intl: ^0.15.8 # Latest
-  flutter_staggered_grid_view: ^0.2.7 # Latest
+  flutter_swiper: ^1.1.6
+  multi_image_picker: ^4.3.0
+  auto_size_text: ^2.0.0
+  bloc: ^0.14.1
+  flutter_bloc: ^0.15.0
+  get_it: ^1.0.3
+  equatable: ^0.2.5
+  http: ^0.12.0
+  palette_generator: ^0.2.3
+  intl: ^0.16.1
+  flutter_staggered_grid_view: ^0.3.0
   shared_preferences: ^0.5.3
-  image_picker:
+  image_picker: 
   speech_bubble: ^0.0.1
-  flutter_spinkit: ^3.1.0 # Latest
+  flutter_spinkit: ^3.1.0
 
   cupertino_icons: ^0.1.2
 
